@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Coding Train: Data and APIs Project 1</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.1/dist/chart.umd.min.js"></script>
+    </head>
+    <style>
+        h3 {
+            text-align: center;
+        }
+        div.main {
+            margin: auto;
+            width: 500px;
+        }
+    </style>
+
+    <body>
+        <h3>Viamão lll 230kV</h3>
+        <div class="main" style="width: 800px">
+            <canvas id="myChart" width="400" height="400"></canvas>
+        </div>
+
+        <script>
+            // Data from: https://data.giss.nasa.gov/gistemp/
+            // Mean from: https://earthobservatory.nasa.gov/world-of-change/DecadalTemp
+
+            window.addEventListener("load", setup);
+
+            async function setup() {
+                const ctx = document.getElementById("myChart").getContext("2d");
+                const dataTemps = await getData();
+                const myChart = new Chart(ctx, {
+                    type: "line",
+                    backgroundColor: "blue",
+                    data: {
+                        borderColor: "rgba(0,255,255,.4)",
+                        labels: dataTemps.dia,
+                        backgroundColor: "blue",
+                        interaction: {
+                            mode: "index",
+                            intersect: false,
+                        },
+
+                        datasets: [
+                            {
+                                defaultFontColor: "red",
+                                backgroundColor: "rgba(0,255,255,.4)",
+                                borderColor: "rgba(0,255,255,.4)",
+                                pointBackgroundColor: "red",
+                                pointBorderColor: "yellow",
+                                lineTension: 1,
+                                pointHoverBackgroundColor: "green",
+                                pointHoverBorderColor: "rgba(179,181,198,1)",
+                                label: "Geração de energia eolica dia/hora - Usina de Viamão lll 230kV",
+                                data: dataTemps.val_Geracao,
+                                fill: false,
+                                borderColor: "rgba(99, 132, 255, 1)",
+                                backgroundColor: "rgba(99, 132, 255, 0.5)",
+                                borderWidth: 1,
+                            },
+                        ],
+                    },
+                    options: {
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    font: {
+                                        style: "italic",
+                                        weight: "600",
+                                        style: "bold",
+                                        borderColor: "rgba(0,255,255,.4)",
+                                    },
+                                },
+                            },
+                        },
+                        scale: {
+                            pointLabels: {
+                                fontStyle: "bold",
+                            },
+                        },
+                    },
+                });
+            }
+
+            async function getData() {
+                // const response = await fetch('testdata.csv');
+                const response = await fetch("./media_dia.csv");
+                const data = await response.text();
+
+                const dia = [];
+                const val_Geracao = [];
+
+                const rows = data.split("\n").slice(1);
+                rows.forEach((row) => {
+                    const cols = row.split(",");
+
+                    dia.push(cols[0]);
+                    val_Geracao.push(cols[1]);
+                });
+                return {
+                    dia,
+
+                    val_Geracao,
+                };
+            }
+        </script>
+    </body>
+</html>
